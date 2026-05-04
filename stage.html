@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title> JOJO  CURRENCY EXCHANGE WEBSITE .World Data Hub | Africa & Asia Countries</title>
+    <style>
+ .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 80px;     /* you can change size */
+    height: 80px;
+    border-radius: 50%;  /* makes it round */
+    object-fit: cover;
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* GLOBAL VARIABLES (fallback) */
+        :root {
+            --page-bg: #f5f2eb;
+            --header-bg: #2c3e2f;
+            --header-text: #ffffff;
+            --nav-bg: #d4a373;
+            --nav-text: #2d2b2a;
+            --card-bg: #ffffff;
+            --text-color: #1e2a2f;
+            --table-header-bg: #4a6b4f;
+            --table-header-text: white;
+            --table-row-border: #ddd;
+            --btn-bg: #4a6b4f;
+            --btn-text: white;
+            --footer-bg: #2c3e2f;
+            --footer-text: #f0f0f0;
+            --link-decoration: none;
+        }
+
+        body {
+            background-color: var(--page-bg);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* REMOVE UNDERLINE FROM ALL LINKS */
+        a, .nav-link, button a, a button {
+            text-decoration: var(--link-decoration) !important;
+        }
+
+        /* HEADER */
+        .header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+        .header p {
+            opacity: 0.85;
+            font-size: 0.9rem;
+        }
+
+        /* NAVIGATION BAR (no underlines, button style) */
+        .nav-bar {
+            background-color: var(--nav-bg);
+            padding: 12px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+        }
+        .nav-btn {
+            background: rgba(255,255,240,0.2);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+            color: var(--nav-text);
+            background-color: rgba(255,255,245,0.85);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .nav-btn i {
+            margin-right: 6px;
+        }
+        .nav-btn.active {
+            background-color: var(--btn-bg);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            background-color: var(--btn-bg);
+            color: white;
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        /* CARD STYLE */
+        .view-card {
+            background-color: var(--card-bg);
+            border-radius: 28px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: background 0.2s;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-left: 5px solid var(--btn-bg);
+            padding-left: 16px;
+        }
+
+        /* COUNTRIES TABLE */
+        .countries-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .countries-table th,
+        .countries-table td {
+            border: 1px solid var(--table-row-border);
+            padding: 12px 10px;
+            text-align: center;
+        }
+        .countries-table th {
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+            font-weight: 600;
+        }
+        .countries-table tr {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        .countries-table tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        /* Details / Converter / History shared */
+        .info-panel {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 24px;
+            margin-top: 20px;
+        }
+        .currency-input {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .currency-input input, .currency-input select {
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid #ccc;
+            background: var(--page-bg);
+            color: var(--text-color);
+            flex: 1;
+        }
+        .result-box {
+            background: var(--table-header-bg);
+            color: white;
+            padding: 15px;
+            border-radius: 28px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .history-list {
+            list-style: none;
+        }
+        .history-list li {
+            background: rgba(0,0,0,0.03);
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 30px;
+        }
+
+        /* SETTINGS PANEL */
+        .setting-group {
+            margin-bottom: 28px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .color-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 30px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #aaa;
+        }
+        input[type="color"] {
+            width: 60px;
+            height: 45px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .reset-btn {
+            background-color: #c44536;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 18px;
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+        button, .nav-btn {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        @media (max-width: 720px) {
+            .countries-table th, .countries-table td { padding: 8px 4px; font-size: 0.8rem; }
+            .nav-btn { padding: 6px 16px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <h1>🌍 JOJO CURRENCY EXCHANGE WEBSITE</h1>
+    <p>Countries, Capitals & Statistics | Themed Settings (shared across all views)</p>
+</header>
+
+<nav class="nav-bar">
+    <button class="nav-btn" data-view="home"><i class="fas fa-globe"></i> Home / Countries</button>
+    <button class="nav-btn" data-view="details"><i class="fas fa-info-circle"></i> Details</button>
+    <button class="nav-btn" data-view="converter"><i class="fas fa-exchange-alt"></i> Converter</button>
+    <button class="nav-btn" data-view="history"><i class="fas fa-clock"></i> History</button>
+    <button class="nav-btn" data-view="settings"><i class="fas fa-sliders-h"></i> Settings</button>
+</nav>
+
+<main class="container" id="mainContainer">
+    <!-- dynamic views injected here -->
+</main>
+
+<footer>
+    <p>🌐  JOJO CURRENCY EXCHANGEConnected system • Theme changes apply to all pages instantly • No link underline</p>
+</footer>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<script>
+    // ---------- THEME & STORAGE (Shared across all "pages") ----------
+    let currentView = "home";
+
+    // Default theme values
+    let themeSettings = {
+        pageBg: "#f5f2eb",
+        headerBg: "#2c3e2f",
+        headerText: "#ffffff",
+        navBg: "#d4a373",
+        navText: "#2d2b2a",
+        cardBg: "#ffffff",
+        textColor: "#1e2a2f",
+        tableHeaderBg: "#4a6b4f",
+        tableHeaderText: "#ffffff",
+        rowBorder: "#ddd",
+        btnBg: "#4a6b4f",
+        btnText: "#ffffff",
+        footerBg: "#2c3e2f",
+        footerText: "#f0f0f0"
+    };
+
+    // helper: load from localStorage
+    function loadTheme() {
+        const saved = localStorage.getItem("worlddata_theme");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                themeSettings = { ...themeSettings, ...parsed };
+            } catch(e) {}
+        }
+        applyThemeToCSS();
+    }
+
+    function saveTheme() {
+        localStorage.setItem("worlddata_theme", JSON.stringify(themeSettings));
+        applyThemeToCSS();
+    }
+
+    function applyThemeToCSS() {
+        const root = document.documentElement.style;
+        root.setProperty('--page-bg', themeSettings.pageBg);
+        root.setProperty('--header-bg', themeSettings.headerBg);
+        root.setProperty('--header-text', themeSettings.headerText);
+        root.setProperty('--nav-bg', themeSettings.navBg);
+        root.setProperty('--nav-text', themeSettings.navText);
+        root.setProperty('--card-bg', themeSettings.cardBg);
+        root.setProperty('--text-color', themeSettings.textColor);
+        root.setProperty('--table-header-bg', themeSettings.tableHeaderBg);
+        root.setProperty('--table-header-text', themeSettings.tableHeaderText);
+        root.setProperty('--table-row-border', themeSettings.rowBorder);
+        root.setProperty('--btn-bg', themeSettings.btnBg);
+        root.setProperty('--btn-text', themeSettings.btnText);
+        root.setProperty('--footer-bg', themeSettings.footerBg);
+        root.setProperty('--footer-text', themeSettings.footerText);
+        root.setProperty('--link-decoration', 'none');  // enforce no underline
+        // also force body background
+        document.body.style.backgroundColor = themeSettings.pageBg;
+        document.body.style.color = themeSettings.textColor;
+        // optional extra sync for dynamic elements
+        const activeBtn = document.querySelector('.nav-btn.active');
+        if(activeBtn) activeBtn.style.backgroundColor = themeSettings.btnBg;
+    }
+
+    // ---------- DATA MODELS (countries + history for converter) ----------
+    const countries = [
+        { name: "Nigeria", continent: "Africa", capital: "Abuja", population: 239, area: 923768 },
+        { name: "Ethiopia", continent: "Africa", capital: "Addis Ababa", population: 113, area: 1120000 },
+        { name: "Egypt", continent: "Africa", capital: "Cairo", population: 109, area: 996603 },
+        { name: "Kenya", continent: "Africa", capital: "Nairobi", population: 54, area: 582646 },
+        { name: "Rwanda", continent: "Africa", capital: "Kigali", population: 14, area: 26338 },
+        { name: "China", continent: "Asia", capital: "Beijing", population: 1400, area: 9596961 },
+        { name: "India", continent: "Asia", capital: "New Delhi", population: 1400, area: 3287263 },
+        { name: "Indonesia", continent: "Asia", capital: "Jakarta", population: 280, area: 1904569 },
+        { name: "Pakistan", continent: "Asia", capital: "Islamabad", population: 240, area: 881913 },
+        { name: "Japan", continent: "Asia", capital: "Tokyo", population: 125, area: 377975 }
+    ];
+
+    // Converter history storage (simple array)
+    let conversionHistory = JSON.parse(localStorage.getItem("convHistory") || "[]");
+
+    function saveHistory() {
+        localStorage.setItem("convHistory", JSON.stringify(conversionHistory));
+    }
+
+    function addHistoryRecord(record) {
+        conversionHistory.unshift(record);
+        if(conversionHistory.length > 15) conversionHistory.pop();
+        saveHistory();
+    }
+
+    // ---------- RENDER VIEWS (all share theme & update dynamically) ----------
+    function renderHomeView() {
+        return `
+            <div class="view-card">
+                <h2><i class="fas fa-map-marked-alt"></i> Countries in Africa & Asia</h2>
+                <div style="overflow-x: auto;">
+                    <table class="countries-table">
+                        <thead>
+                            <tr><th>Country</th><th>Continent</th><th>Capital</th><th>Population (M)</th><th>Area (km²)</th></tr>
+                        </thead>
+                        <tbody>
+                            ${countries.map(c => `
+                                <tr>
+                                    <td><strong>${c.name}</strong></td>
+                                    <td>${c.continent}</td>
+                                    <td>${c.capital}</td>
+                                    <td>${c.population}</td>
+                                    <td>${c.area.toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top:20px; font-size:0.85rem; text-align:center;">✔️ Data updated · Theme sync active</p>
+            </div>
+        `;
+    }
+
+    function renderDetailsView() {
+        // Show extra details for each country: density & fun fact
+        return `
+            <div class="view-card">
+                <h2><i class="fas fa-chart-line"></i> Detailed Country Insights</h2>
+                <div style="overflow-x: auto;">
+                    <table class="countries-table">
+                        <thead><tr><th>Country</th><th>Continent</th><th>Capital</th><th>Density (p/km²)</th><th>Area rank</th></tr></thead>
+                        <tbody>
+                            ${countries.map(c => {
+                                const density = (c.population / (c.area / 1000)).toFixed(1);
+                                const areaRank = c.area > 1000000 ? "Very Large" : (c.area > 500000 ? "Large" : "Medium");
+                                return `<tr>
+                                    <td><b>${c.name}</b></td>
+                                    <td>${c.continent}</td>
+                                    <td>${c.capital}</td>
+                                    <td>${density} p/km²</td>
+                                    <td>${areaRank}</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="info-panel">
+                    <i class="fas fa-lightbulb"></i> <strong>Note:</strong> Population in millions, area in km². Density calculated as (populationM * 1e6 / area).
+                </div>
+            </div>
+        `;
+    }
+
+    function renderConverterView() {
+        // Simple currency/unit? We'll simulate a currency converter using imaginary currency "Afro" & "Asia Credit"
+        return `
+            <div class="view-card">
+                <h2><i class="fas fa-coins"></i> Currency Converter (Demo)</h2>
+                <div class="currency-input">
+                    <input type="number" id="amountInput" placeholder="Amount" value="1" step="any">
+                    <select id="fromCurrency">
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                        <option value="AFR">Afro (AFR)</option>
+                        <option value="ASI">Asia Credit (ASI)</option>
+                         <option value="RWF">RWF</option>
+                    </select>
+                    <span>➡️</span>
+                    <select id="toCurrency">
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                        <option value="AFR">Afro (AFR)</option>
+                        <option value="ASI">Asia Credit (ASI)</option>
+                            <option value="RWF">RWF</option>
+                    </select>
+                    <button class="nav-btn" id="convertBtn" style="background:var(--btn-bg); color:white;">Convert</button>
+                </div>
+                <div id="convertResult" class="result-box">Result will appear here</div>
+                <div class="info-panel" style="margin-top:25px;">
+                    <h3>📜 Recent Conversions</h3>
+                    <ul class="history-list" id="historyList">
+                        ${conversionHistory.length === 0 ? '<li>No conversions yet</li>' : conversionHistory.map(h => `<li>${h.amount} ${h.from} → ${h.result} ${h.to} (${h.date})</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderHistoryView() {
+        return `
+            <div class="view-card">
+                <h2><i class="fas fa-archive"></i> Full History Logs</h2>
+                <p>All conversion records stored locally (theme does not affect data).</p>
+                <ul class="history-list" id="fullHistoryList">
+                    ${conversionHistory.length === 0 ? '<li>📭 No conversion history yet. Use Converter page.</li>' : conversionHistory.map(h => `<li><strong>${h.amount} ${h.from}</strong> = ${h.result} ${h.to} — ${h.date}</li>`).join('')}
+                </ul>
+                <button id="clearHistoryBtn" class="reset-btn" style="background:#6c757d; margin-top:20px;"><i class="fas fa-trash-alt"></i> Clear History</button>
+            </div>
+        `;
+    }
+
+    function renderSettingsView() {
+        return `
+            <div class="view-card">
+                <h2><i class="fas fa-palette"></i> Global Theme Settings</h2>
+                <p>Change colors below — all pages (Home, Details, Converter, History) will update immediately. No link underlines anywhere.</p>
+                <div class="setting-group">
+                    <label>🌕 Page Background</label>
+                    <div class="color-row">
+                        <input type="color" id="pageBg" value="${themeSettings.pageBg}">
+                        <span class="color-preview" style="background:${themeSettings.pageBg}"></span>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>📦 Card / Table Background</label>
+                    <input type="color" id="cardBg" value="${themeSettings.cardBg}">
+                </div>
+                <div class="setting-group">
+                    <label>🎨 Table Header Color</label>
+                    <input type="color" id="tableHeaderBg" value="${themeSettings.tableHeaderBg}">
+                </div>
+                <div class="setting-group">
+                    <label>📝 Main Text Color</label>
+                    <input type="color" id="textColor" value="${themeSettings.textColor}">
+                </div>
+                <div class="setting-group">
+                    <label>🧭 Navigation Bar Background</label>
+                    <input type="color" id="navBg" value="${themeSettings.navBg}">
+                </div>
+                <div class="setting-group">
+                    <label>🔘 Buttons / Accent Color</label>
+                    <input type="color" id="btnBg" value="${themeSettings.btnBg}">
+                </div>
+                <div class="setting-group">
+                    <label>🦶 Footer Background</label>
+                    <input type="color" id="footerBg" value="${themeSettings.footerBg}">
+                </div>
+                <button id="resetDefaultThemeBtn" class="reset-btn"><i class="fas fa-undo-alt"></i> Reset to Default Theme</button>
+                <p style="margin-top:25px; font-size:0.8rem;">✅ Changes saved automatically & applied across all views (including table, buttons, headers).</p>
+            </div>
+        `;
+    }
+
+    // ----- global navigation & attach dynamic events after rendering ----
+    function attachConverterEvents() {
+        const convertBtn = document.getElementById("convertBtn");
+        if (convertBtn) {
+            convertBtn.onclick = () => {
+                const amount = parseFloat(document.getElementById("amountInput")?.value);
+                const fromCurr = document.getElementById("fromCurrency")?.value;
+                const toCurr = document.getElementById("toCurrency")?.value;
+                if (isNaN(amount)) {
+                    document.getElementById("convertResult").innerHTML = "Please enter a valid number";
+                    return;
+                }
+                // mock exchange rates (based on USD)
+                const rates = { USD: 1, EUR: 0.92, AFR: 1.2, ASI: 0.85 };
+                let fromRate = rates[fromCurr] || 1;
+                let toRate = rates[toCurr] || 1;
+                let usdValue = amount / fromRate;
+                let result = (usdValue * toRate).toFixed(2);
+                const resultText = `${result}`;
+                document.getElementById("convertResult").innerHTML = `${amount} ${fromCurr} = ${resultText} ${toCurr}`;
+                // add history
+                const record = {
+                    amount: amount,
+                    from: fromCurr,
+                    to: toCurr,
+                    result: resultText,
+                    date: new Date().toLocaleString()
+                };
+                addHistoryRecord(record);
+                // if history view currently visible, re-render? but we can just update later when switching view
+                // also if current view is history or converter we need to refresh without full page reload 
+                if (currentView === "converter") {
+                    const historyListEl = document.getElementById("historyList");
+                    if (historyListEl) {
+                        historyListEl.innerHTML = conversionHistory.map(h => `<li>${h.amount} ${h.from} → ${h.result} ${h.to} (${h.date})</li>`).join('');
+                    }
+                }
+                if(currentView === "history") {
+                    renderView(); // re-render history to show updated list
+                }
+            };
+        }
+    }
+
+    function attachSettingsEvents() {
+        const inputs = ["pageBg","cardBg","tableHeaderBg","textColor","navBg","btnBg","footerBg"];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("input", (e) => {
+                    const val = e.target.value;
+                    if (id === "pageBg") themeSettings.pageBg = val;
+                    if (id === "cardBg") themeSettings.cardBg = val;
+                    if (id === "tableHeaderBg") themeSettings.tableHeaderBg = val;
+                    if (id === "textColor") themeSettings.textColor = val;
+                    if (id === "navBg") themeSettings.navBg = val;
+                    if (id === "btnBg") themeSettings.btnBg = val;
+                    if (id === "footerBg") themeSettings.footerBg = val;
+                    saveTheme();
+                    // also update previews
+                    const preview = document.querySelector(`#${id} + .color-preview`);
+                    if(preview) preview.style.backgroundColor = val;
+                });
+            }
+        });
+        const resetBtn = document.getElementById("resetDefaultThemeBtn");
+        if (resetBtn) {
+            resetBtn.onclick = () => {
+                themeSettings = {
+                    pageBg: "#f5f2eb", headerBg: "#2c3e2f", headerText: "#ffffff", navBg: "#d4a373",
+                    navText: "#2d2b2a", cardBg: "#ffffff", textColor: "#1e2a2f", tableHeaderBg: "#4a6b4f",
+                    tableHeaderText: "#ffffff", rowBorder: "#ddd", btnBg: "#4a6b4f", btnText: "#ffffff",
+                    footerBg: "#2c3e2f", footerText: "#f0f0f0"
+                };
+                saveTheme();
+                renderView();  // reload whole view (settings) to refresh color pickers
+            };
+        }
+    }
+
+    function attachHistoryEvents() {
+        const clearBtn = document.getElementById("clearHistoryBtn");
+        if (clearBtn) {
+            clearBtn.onclick = () => {
+                if (confirm("Clear all conversion history?")) {
+                    conversionHistory = [];
+                    saveHistory();
+                    renderView();
+                }
+            };
+        }
+    }
+
+    // Main render function
+    function renderView() {
+        const container = document.getElementById("mainContainer");
+        if (!container) return;
+        let html = "";
+        if (currentView === "home") html = renderHomeView();
+        else if (currentView === "details") html = renderDetailsView();
+        else if (currentView === "converter") html = renderConverterView();
+        else if (currentView === "history") html = renderHistoryView();
+        else if (currentView === "settings") html = renderSettingsView();
+        container.innerHTML = html;
+        
+        // after attaching HTML, bind specific events
+        if (currentView === "converter") attachConverterEvents();
+        if (currentView === "settings") attachSettingsEvents();
+        if (currentView === "history") attachHistoryEvents();
+        
+        // highlight active nav button
+        document.querySelectorAll(".nav-btn").forEach(btn => {
+            const view = btn.getAttribute("data-view");
+            if (view === currentView) btn.classList.add("active");
+            else btn.classList.remove("active");
+        });
+        // sync active button background
+        const activeBtn = document.querySelector('.nav-btn.active');
+        if(activeBtn) activeBtn.style.backgroundColor = themeSettings.btnBg;
+    }
+
+    // Navigation listeners
+    function initNavigation() {
+        const btns = document.querySelectorAll(".nav-btn");
+        btns.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const view = btn.getAttribute("data-view");
+                if (view) {
+                    currentView = view;
+                    renderView();
+                }
+            });
+        });
+    }
+
+    // Initial load theme & boot
+    loadTheme();
+    initNavigation();
+    renderView();
+</script>
+</body>
+</html>
