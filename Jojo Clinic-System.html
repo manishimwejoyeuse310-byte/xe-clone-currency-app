@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Digital Patient Check-in System | Clinic Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover {
+            background: #34495e;
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .logo-area {
+            padding: 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .queue-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .symptom-check {
+            padding: 8px;
+            margin: 5px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .symptom-check:hover {
+            background: #e9ecef;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            animation: slideIn 0.5s;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .badge-queue {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
+            .main-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container-fluid p-0">
+            <div class="row g-0">
+                <!-- Sidebar with Dynamic Menu (LOOPING) -->
+                <div class="col-md-3 col-lg-2 sidebar">
+                    <div class="logo-area text-center">
+                        <i class="fas fa-hospital-user fa-3x text-white"></i>
+                        <h5 class="text-white mt-2"> JOJO CLINIC SYTEM</h5>
+                        <p class="text-white-50 small">Digital Check-in</p>
+                    </div>
+                    <ul class="nav flex-column">
+                        <!-- LOOPING through menu items -->
+                        <li class="nav-item" v-for="(item, index) in menuItems" :key="index">
+                            <a class="nav-link" href="#" @click.prevent="currentView = item.value">
+                                <i :class="item.icon"></i>
+                                {{ item.name }}
+                                <span class="badge bg-danger float-end mt-1" v-if="item.value === 'Check-in' && isRegistered">1</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="col-md-9 col-lg-10 main-content">
+                    <!-- CONDITIONAL RENDERING: Show different views based on currentView -->
+                    
+                    <!-- CHECK-IN VIEW -->
+                    <div v-if="currentView === 'Check-in'">
+                        <!-- CONDITIONAL: Show Registration Form OR Queue Status -->
+                        <div v-if="!isRegistered">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h4 class="mb-0"><i class="fas fa-user-plus"></i> Patient Registration Form</h4>
+                                </div>
+                                <div class="card-body">
+                                    <!-- TWO-WAY BINDING with v-model -->
+                                    <form @submit.prevent="submitCheckIn">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Full Name *</label>
+                                            <input type="text" class="form-control" v-model="formData.name" 
+                                                   placeholder="Enter your full name" required>
+                                            <small class="text-muted">Minimum 2 characters</small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">National ID (10 digits) *</label>
+                                            <input type="text" class="form-control" v-model="formData.nationalID" 
+                                                   placeholder="Enter 10-digit ID" maxlength="10">
+                                            <!-- CONDITIONAL error message -->
+                                            <small class="text-danger" v-if="idError">{{ idError }}</small>
+                                            <small class="text-muted" v-else>Example: 1234567890</small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Select Symptoms (Multiple)</label>
+                                            <div class="row">
+                                                <!-- LOOPING through available symptoms array -->
+                                                <div class="col-md-4" v-for="symptom in availableSymptoms" :key="symptom">
+                                                    <div class="symptom-check">
+                                                        <input type="checkbox" :value="symptom" v-model="formData.symptoms">
+                                                        <label class="ms-2">{{ symptom }}</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">Selected: {{ formData.symptoms.length }} symptoms</small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Additional Notes</label>
+                                            <textarea class="form-control" v-model="formData.notes" 
+                                                      rows="2" placeholder="Any additional information..."></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-check-circle"></i> Submit Check-in
+                                        </button>
+                                        <button type="button" class="btn btn-secondary ms-2" @click="resetForm">
+                                            <i class="fas fa-redo"></i> Reset
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else>
+                            <!-- Queue Status Component -->
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h4 class="mb-0"><i class="fas fa-clock"></i> Your Queue Status</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-8">
+                                                <h5>Welcome, <strong>{{ currentPatient.name }}</strong>!</h5>
+                                                <p class="mb-0">
+                                                    <i class="fas fa-id-card"></i> ID: {{ currentPatient.nationalID }}<br>
+                                                    <i class="fas fa-calendar"></i> Time: {{ currentPatient.registrationTime }}
+                                                </p>
+                                            </div>
+                                            <div class="col-md-4 text-center">
+                                                <div class="queue-number">{{ currentPatient.queueNumber }}</div>
+                                                <span class="badge bg-warning">Queue Number</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="mt-4"><i class="fas fa-list"></i> Current Queue List</h5>
+                                    <!-- TABLE RENDERING with v-for LOOP -->
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Queue No.</th>
+                                                    <th>Name</th>
+                                                    <th>National ID</th>
+                                                    <th>Symptoms</th>
+                                                    <th>Time</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- LOOPING through patients array -->
+                                                <tr v-for="(patient, index) in patients" :key="patient.id">
+                                                    <td>{{ index + 1 }}</td>
+                                                    <td><span class="badge bg-primary">{{ patient.queueNumber }}</span></td>
+                                                    <td>{{ patient.name }}</td>
+                                                    <td>{{ patient.nationalID }}</td>
+                                                    <td>{{ patient.symptoms.join(', ') || 'None' }}</td>
+                                                    <td>{{ patient.registrationTime }}</td>
+                                                    <td>
+                                                        <span class="badge" :class="patient.queueNumber === currentPatient.queueNumber ? 'bg-success' : 'bg-secondary'">
+                                                            {{ patient.queueNumber === currentPatient.queueNumber ? 'You' : 'Waiting' }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="patients.length === 0">
+                                                    <td colspan="7" class="text-center">No patients in queue</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <p class="text-muted">
+                                            <i class="fas fa-users"></i> Total patients today: {{ patients.length }} | 
+                                            Your position: {{ getQueuePosition }}
+                                        </p>
+                                        <button class="btn btn-danger" @click="cancelRegistration">
+                                            <i class="fas fa-times-circle"></i> Cancel Registration
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MY PROFILE VIEW -->
+                    <div v-if="currentView === 'My Profile'">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="fas fa-user-circle"></i> My Profile</h4>
+                            </div>
+                            <div class="card-body">
+                                <div v-if="currentPatient">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="fw-bold">Full Name:</label>
+                                                <p class="border-bottom pb-2">{{ currentPatient.name }}</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="fw-bold">National ID:</label>
+                                                <p class="border-bottom pb-2">{{ currentPatient.nationalID }}</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="fw-bold">Queue Number:</label>
+                                                <p class="border-bottom pb-2 h3 text-primary">#{{ currentPatient.queueNumber }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="fw-bold">Symptoms:</label>
+                                                <div class="border rounded p-3 bg-light">
+                                                    <div v-for="symptom in currentPatient.symptoms" :key="symptom" class="badge bg-info m-1">
+                                                        {{ symptom }}
+                                                    </div>
+                                                    <p v-if="currentPatient.symptoms.length === 0" class="text-muted mb-0">No symptoms reported</p>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="fw-bold">Registration Time:</label>
+                                                <p>{{ currentPatient.registrationTime }}</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="fw-bold">Status:</label>
+                                                <span class="badge bg-warning">{{ currentPatient.status }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> No patient is currently registered. Please check-in first.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HEALTH GUIDE GAME VIEW -->
+                    <div v-if="currentView === 'Health Guide'">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h4 class="mb-0"><i class="fas fa-gamepad"></i> Digital Health Guide - Interactive Game</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert" :class="gameScore >= 10 ? 'alert-success' : (gameScore <= -5 ? 'alert-danger' : 'alert-secondary')">
+                                    <h5><i class="fas fa-chart-line"></i> {{ gameMessage }}</h5>
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar" :style="{width: (gameScore + 10) * 5 + '%'}" 
+                                             :class="gameScore >= 10 ? 'bg-success' : (gameScore <= -5 ? 'bg-danger' : 'bg-info')">
+                                            Score: {{ gameScore }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h5 class="mt-4">Choose your health actions:</h5>
+                                <div class="row">
+                                    <!-- LOOPING through health actions array -->
+                                    <div class="col-md-4 col-lg-3 mb-3" v-for="(action, index) in healthActions" :key="index">
+                                        <div class="card game-card h-100">
+                                            <div class="card-body text-center">
+                                                <div class="display-4">{{ action.emoji }}</div>
+                                                <h6 class="mt-2">{{ action.text }}</h6>
+                                                <div class="mt-3">
+                                                    <button class="btn btn-sm btn-light w-100 mb-2" @click="performAction(action.points)">
+                                                        <i class="fas fa-thumbs-up"></i> Follow (+{{ action.points }})
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-light w-100" @click="performAction(action.negativePoints)">
+                                                        <i class="fas fa-thumbs-down"></i> Ignore ({{ action.negativePoints }})
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 text-center">
+                                    <button class="btn btn-warning" @click="resetGame">
+                                        <i class="fas fa-sync-alt"></i> Reset Game
+                                    </button>
+                                    <button class="btn btn-secondary ms-2" @click="currentView = 'Check-in'">
+                                        <i class="fas fa-arrow-left"></i> Back to Check-in
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HELP VIEW -->
+                    <div v-if="currentView === 'Help'">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h4 class="mb-0"><i class="fas fa-question-circle"></i> Help & Support</h4>
+                            </div>
+                            <div class="card-body">
+                                <h5>📋 System Guide</h5>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                                <h6>How to Check-in</h6>
+                                                <p class="small">1. Fill in your full name<br>
+                                                   2. Enter valid 10-digit National ID<br>
+                                                   3. Select your symptoms<br>
+                                                   4. Click "Submit Check-in"<br>
+                                                   5. Get your unique queue number</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <i class="fas fa-gamepad text-info fa-2x mb-2"></i>
+                                                <h6>Health Guide Game</h6>
+                                                <p class="small">• Make healthy choices to earn points<br>
+                                                   • Reach 10 points to WIN! 🎉<br>
+                                                   • Avoid negative actions<br>
+                                                   • Reset anytime to try again</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-phone-alt"></i> <strong>Need Assistance?</strong><br>
+                                            📞 Hotline: 1-800-CLINIC-123<br>
+                                            📧 Email: support@digitalclinic.com<br>
+                                            💬 Live Chat: Available 24/7
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <script>
+        const { createApp, ref, reactive, computed, onMounted } = Vue;
+        
+        createApp({
+            setup() {
+                // ==================== VARIABLES & DATA BINDING ====================
+                
+                // State Variables
+                const isRegistered = ref(false);
+                const currentQueueNumber = ref(1);
+                const currentView = ref('Check-in');
+                const gameScore = ref(0);
+                const gameMessage = ref('🎮 Welcome to Health Guide! Make good choices to earn points!');
+                
+                // ARRAY: Store all patients
+                const patients = ref([]);
+                
+                // ARRAY: Current patient
+                const currentPatient = ref(null);
+                
+                // ARRAY: Available symptoms
+                const availableSymptoms = ['🤒 Fever', '😷 Cough', '🤕 Headache', '😖 Sore Throat', '😴 Fatigue', '🌬️ Shortness of Breath', '🤢 Nausea'];
+                
+                // ARRAY: Menu items for navigation
+                const menuItems = [
+                    { name: '📝 Check-in', value: 'Check-in', icon: 'fas fa-edit' },
+                    { name: '👤 My Profile', value: 'My Profile', icon: 'fas fa-user' },
+                    { name: '🎮 Health Guide', value: 'Health Guide', icon: 'fas fa-gamepad' },
+                    { name: '❓ Help', value: 'Help', icon: 'fas fa-question-circle' }
+                ];
+                
+                // ARRAY: Health actions for game (NPC movements/actions)
+                const healthActions = [
+                    { text: 'Wash Hands Frequently', emoji: '🧼', points: 3, negativePoints: -2 },
+                    { text: 'Wear Face Mask', emoji: '😷', points: 3, negativePoints: -3 },
+                    { text: 'Maintain Social Distance', emoji: '📏', points: 4, negativePoints: -2 },
+                    { text: 'Cover Cough/Sneeze', emoji: '🤧', points: 2, negativePoints: -1 },
+                    { text: 'Stay Home When Sick', emoji: '🏠', points: 3, negativePoints: -3 },
+                    { text: 'Drink Plenty of Water', emoji: '💧', points: 2, negativePoints: -1 },
+                    { text: 'Exercise Regularly', emoji: '🏃', points: 2, negativePoints: -1 },
+                    { text: 'Get Enough Sleep', emoji: '😴', points: 2, negativePoints: -1 }
+                ];
+                
+                // Form Data with TWO-WAY BINDING
+                const formData = reactive({
+                    name: '',
+                    nationalID: '',
+                    symptoms: [],
+                    notes: ''
+                });
+                
+                const idError = ref('');
+                
+                // ==================== COMPUTED PROPERTIES ====================
+                const getQueuePosition = computed(() => {
+                    if (!currentPatient.value) return 'N/A';
+                    const index = patients.value.findIndex(p => p.id === currentPatient.value.id);
+                    return index + 1;
+                });
+                
+                // ==================== FUNCTIONS & METHODS ====================
+                
+                // FUNCTION: Submit check-in with validation
+                const submitCheckIn = () => {
+                    // CONDITIONAL: Form validation
+                    if (formData.name.length < 2) {
+                        alert('❌ Please enter a valid name (minimum 2 characters)!');
+                        return;
+                    }
+                    
+                    // CONDITIONAL: National ID validation
+                    if (!formData.nationalID || formData.nationalID.length !== 10) {
+                        idError.value = 'National ID must be exactly 10 digits!';
+                        return;
+                    }
+                    
+                    if (!/^\d+$/.test(formData.nationalID)) {
+                        idError.value = 'National ID must contain only numbers!';
+                        return;
+                    }
+                    
+                    idError.value = '';
+                    
+                    // Create new patient object
+                    const newPatient = {
+                        id: Date.now(),
+                        name: formData.name,
+                        nationalID: formData.nationalID,
+                        symptoms: [...formData.symptoms],
+                        notes: formData.notes,
+                        queueNumber: currentQueueNumber.value,
+                        registrationTime: new Date().toLocaleTimeString(),
+                        status: 'waiting'
+                    };
+                    
+                    // ADD to ARRAY (queue management)
+                    patients.value.push(newPatient);
+                    
+                    // Update state
+                    currentPatient.value = newPatient;
+                    isRegistered.value = true;
+                    currentQueueNumber.value++;
+                    
+                    // CONDITIONAL: Success message
+                    alert(`✅ SUCCESS! Welcome ${formData.name}!\nYour Queue Number is: ${newPatient.queueNumber}\nPlease wait for your turn.`);
+                    
+                    // Reset form
+                    resetForm();
+                };
+                
+                // FUNCTION: Cancel registration
+                const cancelRegistration = () => {
+                    if (confirm('Are you sure you want to cancel your registration?')) {
+                        isRegistered.value = false;
+                        currentPatient.value = null;
+                        alert('Registration cancelled successfully.');
+                    }
+                };
+                
+                // FUNCTION: Reset form
+                const resetForm = () => {
+                    formData.name = '';
+                    formData.nationalID = '';
+                    formData.symptoms = [];
+                    formData.notes = '';
+                    idError.value = '';
+                };
+                
+                // FUNCTION: Perform game action
+                const performAction = (points) => {
+                    gameScore.value += points;
+                    
+                    // CONDITIONAL: Determine game status and messages
+                    if (gameScore.value >= 10) {
+                        gameMessage.value = '🎉 SUCCESS! You are a Health Champion! 🎉 You earned a certificate!';
+                        alert('🎉 AMAZING! You successfully completed the Health Guide! 🎉');
+                    } else if (gameScore.value <= -5) {
+                        gameMessage.value = '❌ FAILURE! You need to follow health guidelines better! Click Reset to try again. ❌';
+                        alert('❌ GAME OVER! Please reset and follow the health guidelines carefully! ❌');
+                    } else {
+                        gameMessage.value = `🎯 Current Score: ${gameScore.value} points. Keep making healthy choices!`;
+                        if (points > 0) {
+                            // Positive feedback
+                            const feedback = ['Great choice! 🎉', 'Healthy decision! 🌟', 'You\'re doing great! 💪', 'Keep it up! 👍'];
+                            gameMessage.value = feedback[Math.floor(Math.random() * feedback.length)] + ' ' + gameMessage.value;
+                        } else if (points < 0) {
+                            // Negative feedback
+                            const feedback = ['Oops! That\'s not healthy! 😷', 'Try to follow guidelines! 📋', 'Remember to stay safe! ⚠️', 'Let\'s make better choices! 🌟'];
+                            gameMessage.value = feedback[Math.floor(Math.random() * feedback.length)] + ' ' + gameMessage.value;
+                        }
+                    }
+                };
+                
+                // FUNCTION: Reset game
+                const resetGame = () => {
+                    gameScore.value = 0;
+                    gameMessage.value = 'Game reset! Make healthy choices to earn points and reach 10! 🌟';
+                    alert('Game has been reset! Start making healthy choices!');
+                };
+                
+                // ==================== LIFECYCLE HOOKS ====================
+                
+                // LIFECYCLE: mounted() - Initialize clinic environment
+                onMounted(() => {
+                    console.log('🏥 Clinic Digital Check-in System Initialized!');
+                    console.log('✅ All core programming concepts implemented:');
+                    console.log('   - Variables & Data Binding (v-model, reactive)');
+                    console.log('   - Conditional Statements (v-if, validation)');
+                    console.log('   - Arrays & Data Storage (patients, symptoms)');
+                    console.log('   - Looping (v-for for tables, menus, games)');
+                    console.log('   - Functions & Methods (submit, cancel, game actions)');
+                    
+                    // Check for existing session data
+                    const savedData = localStorage.getItem('clinicSystemData');
+                    if (savedData) {
+                        console.log('📦 Found existing session data');
+                        const parsed = JSON.parse(savedData);
+                        if (parsed.patients) {
+                            patients.value = parsed.patients;
+                            currentQueueNumber.value = parsed.currentQueueNumber || 1;
+                            console.log(`Loaded ${patients.value.length} patients from storage`);
+                        }
+                    }
+                    
+                    // Add welcome message
+                    setTimeout(() => {
+                        console.log('🎮 Health Guide Game Ready - Make choices to earn points!');
+                    }, 1000);
+                });
+                
+                // Watch for changes to save to localStorage (optional feature)
+                // This demonstrates additional reactive functionality
+                const saveToLocalStorage = () => {
+                    const dataToSave = {
+                        patients: patients.value,
+                        currentQueueNumber: currentQueueNumber.value,
+                        lastSaved: new Date().toISOString()
+                    };
+                    localStorage.setItem('clinicSystemData', JSON.stringify(dataToSave));
+                };
+                
+                // Auto-save every 30 seconds (demonstrates interval with array data)
+                setInterval(() => {
+                    if (patients.value.length > 0) {
+                        saveToLocalStorage();
+                        console.log('💾 Auto-saved clinic data to localStorage');
+                    }
+                }, 30000);
+                
+                // Return all reactive data and methods
+                return {
+                    // State variables
+                    isRegistered,
+                    currentQueueNumber,
+                    currentView,
+                    gameScore,
+                    gameMessage,
+                    patients,
+                    currentPatient,
+                    availableSymptoms,
+                    menuItems,
+                    healthActions,
+                    formData,
+                    idError,
+                    
+                    // Computed
+                    getQueuePosition,
+                    
+                    // Methods/Functions
+                    submitCheckIn,
+                    cancelRegistration,
+                    resetForm,
+                    performAction,
+                    resetGame
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
